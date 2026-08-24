@@ -1,0 +1,96 @@
+// Prisma schema для проекта "Date Invitation"
+// Документация: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// Модель User — администратор системы
+// ============================================================
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String // bcrypt hash
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============================================================
+// Модель Invitation — приглашение на свидание
+// ============================================================
+model Invitation {
+  id           String            @id @default(cuid())
+  title        String // Название приглашения (для админки)
+  headline     String // Заголовок на экране приветствия
+  greetingText String // Текст приветствия
+  gifUrl       String // URL GIF-анимации
+  token        String            @unique // Уникальный токен для публичной ссылки
+  status       InvitationStatus  @default(ACTIVE) // Статус приглашения
+  views        Int               @default(0) // Счётчик просмотров
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  steps   InvitationStep[]
+  answers Answer[]
+
+  @@index([status])
+}
+
+// ============================================================
+// Модель InvitationStep — шаг приглашения (дата или место)
+// ============================================================
+model InvitationStep {
+  id           String           @id @default(cuid())
+  invitationId String
+  type         StepType // DATE | PLACE
+  label        String // Текст варианта (например "Суббота 18:00")
+  emoji        String? // Эмодзи для отображения (например "☕")
+  order        Int // Порядок отображения
+  createdAt    DateTime         @default(now())
+
+  invitation Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+
+  dateAnswers  Answer[] @relation("dateStep")
+  placeAnswers Answer[] @relation("placeStep")
+
+  @@index([invitationId, type])
+  @@index([invitationId, order])
+}
+
+// ============================================================
+// Модель Answer — ответ получателя на приглашение
+// ============================================================
+model Answer {
+  id           String   @id @default(cuid())
+  invitationId String
+  dateStepId   String // Выбранная дата
+  placeStepId  String // Выбранное место
+  createdAt    DateTime @default(now())
+
+  invitation Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+  dateStep   InvitationStep @relation("dateStep", fields: [dateStepId], references: [id])
+  placeStep  InvitationStep @relation("placeStep", fields: [placeStepId], references: [id])
+
+  @@index([invitationId])
+}
+
+// ============================================================
+// Enum'ы
+// ============================================================
+
+enum InvitationStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum StepType {
+  DATE
+  PLACE
+}

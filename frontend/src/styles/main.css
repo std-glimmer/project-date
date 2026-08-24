@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Глобальные стили
+   ============================================================ */
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-white text-gray-800 font-sans;
+  }
+
+  /* Плавный скролл */
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  /* Крупная дружелюбная кнопка */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2
+      rounded-full bg-blush-500 text-white font-bold
+      px-8 py-4 text-lg
+      shadow-soft-lg
+      transition-all duration-300
+      hover:bg-blush-600 hover:shadow-soft-xl
+      active:scale-95
+      disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100
+      min-h-[56px];
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2
+      rounded-full bg-blush-100 text-blush-600 font-bold
+      px-8 py-4 text-lg
+      transition-all duration-300
+      hover:bg-blush-200
+      active:scale-95
+      disabled:opacity-50 disabled:cursor-not-allowed
+      min-h-[56px];
+  }
+
+  /* Карточка с мягкой тенью */
+  .card {
+    @apply bg-white rounded-3xl shadow-soft p-6;
+  }
+
+  /* Поле ввода */
+  .input-field {
+    @apply w-full rounded-2xl border-2 border-gray-100
+      px-4 py-3 text-base
+      focus:border-blush-300 focus:outline-none
+      focus:ring-4 focus:ring-blush-100
+      transition-all duration-200
+      bg-gray-50;
+  }
+
+  /* Заголовок */
+  .heading {
+    @apply text-3xl md:text-4xl font-extrabold text-gray-900;
+  }
+
+  /* Подзаголовок */
+  .subheading {
+    @apply text-lg text-gray-500;
+  }
+}
+
+/* ============================================================
+   Анимации переходов между маршрутами
+   ============================================================ */
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* ============================================================
+   Скелетон-загрузка
+   ============================================================ */
+
+.skeleton {
+  @apply bg-gray-100 rounded-xl animate-pulse;
+}
